@@ -1,0 +1,3 @@
+create database msf;
+create user msf with password 'msf123';
+grant all privileges on database msf to msf;

@@ -1,0 +1,8 @@
+create database msf;
+create user msf with password 'msf123';
+grant all privileges on database msf to msf;
+
+sudo -u postgres /usr/bin/psql < createdb_sql.txt 
+
+db_connect msf:msf123@127.0.0.1/msf
+load msgrpc Pass=abc123

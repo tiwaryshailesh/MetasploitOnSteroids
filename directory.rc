@@ -1,0 +1,32 @@
+use auxiliary/admin/smb/list_directory
+<ruby>
+#run_single("db_nmap -sV -O -p 445 --script=smb-check-vulns -T4 -Pn -iL today.txt")
+
+framework.db.services.each do |db_services|
+	if (db_services.port == 445)
+		framework.db.hosts.each do |ip|
+			if ip.id == db_services.host.id
+				print_status("Engaging #{ip.address}")
+                                run_single("set RHOST #{ip.address}")
+                                run_single("run")
+                        end
+                end
+        end
+end
+
+run_single("set SMBUser guest")
+
+framework.db.services.each do |db_services|
+	if (db_services.port == 445)
+		framework.db.hosts.each do |ip|
+			if ip.id == db_services.host.id
+				print_status("Engaging #{ip.address}")
+                                run_single("set RHOST ") #{ip.address}")
+                                run_single("run")
+                        end
+                end
+        end
+end
+
+</ruby>
+
